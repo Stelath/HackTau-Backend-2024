@@ -71,6 +71,15 @@ export const getRestaurants = async ({ latitude, longitude, radius }: SearchPara
   }
 }
 
+import { onRequest } from "firebase-functions/v2/https";
+import { Request, Response } from "express";
+
+export const getPhotoTest = onRequest(async (request: Request, response: Response) => {
+  const photoReference = "places/ChIJURDKN2eAhYARN0AMzUEaiKo/photos/ATplDJZ7CDfdJLG-I44kElxqULuwPfsbQScMckXpU6Ydq44mRYd_Yy6lCstV5uCH9z9y_t32GAznwyhlkEiyyzUK84FAFjQgnnNIVYKNAdYhmcejvfKLJXbSe-jVimrQuOCSajbhTk_J1cAsu47fTAB92ETe5yJYCWkuU_57";
+  const photoUri = await getPhotoUri(photoReference);
+  response.send(photoUri);
+});
+
 const getPhotoUri = async (photoReference: string) => {
   const url = `https://places.googleapis.com/v1/${photoReference}/media?maxHeightPx=1600&skipHttpRedirect=true`;
   
