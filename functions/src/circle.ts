@@ -1,6 +1,7 @@
 import { onRequest } from "firebase-functions/v2/https";
 import { Request, Response } from "express";
 import * as admin from 'firebase-admin';
+import { FieldValue } from "firebase-admin/firestore"
 
 import { getRestaurants, SearchParams } from "./restaurants";
 
@@ -57,7 +58,7 @@ export const joinCircle = onRequest(async (request: Request, response: Response)
         return;
     }
     
-    await docRef.update({ members: admin.firestore.FieldValue.arrayUnion(userId) });
+    await docRef.update({ members: FieldValue.arrayUnion(userId) });
 
     response.send('Joined circle');
 });
