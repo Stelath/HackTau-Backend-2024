@@ -1,0 +1,2 @@
+export GOOGLE_MAPS_API_KEY=AIzaSyCnb6y5WhZLUfaQmMD8Qtog7Ybrql7QL8w
+firebase emulators:start
