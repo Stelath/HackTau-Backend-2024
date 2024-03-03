@@ -56,29 +56,22 @@ export const getRestaurants = async ({ latitude, longitude, radius }: SearchPara
       headers: headers
     });
 
-    const restaurants = json.places.map((place: any) => ({
+    const restaurants = await Promise.all(json.places.map(async (place: any) => ({
       types: place.types,
       formattedAddress: place.formattedAddress,
       rating: place.rating,
       websiteUri: place.websiteUri,
-      displayName: place.displayName,
-      photo: getPhotoUri(place.photos[0].name)
-    }));
+      displayName: place.displayName.text,
+      photo: await getPhotoUri(place.photos[0].name)
+    })));
+
+    console.log(restaurants);
 
     return restaurants
   } catch (error) {
     return { error: "Failed to fetch restaurants" };
   }
 }
-
-import { onRequest } from "firebase-functions/v2/https";
-import { Request, Response } from "express";
-
-export const getPhotoTest = onRequest(async (request: Request, response: Response) => {
-  const photoReference = "places/ChIJURDKN2eAhYARN0AMzUEaiKo/photos/ATplDJZ7CDfdJLG-I44kElxqULuwPfsbQScMckXpU6Ydq44mRYd_Yy6lCstV5uCH9z9y_t32GAznwyhlkEiyyzUK84FAFjQgnnNIVYKNAdYhmcejvfKLJXbSe-jVimrQuOCSajbhTk_J1cAsu47fTAB92ETe5yJYCWkuU_57";
-  const photoUri = await getPhotoUri(photoReference);
-  response.send(photoUri);
-});
 
 const getPhotoUri = async (photoReference: string) => {
   const url = `https://places.googleapis.com/v1/${photoReference}/media?maxHeightPx=1600&skipHttpRedirect=true`;
@@ -100,5 +93,6 @@ const getPhotoUri = async (photoReference: string) => {
     return photoUri;
   } catch (error) {
     console.error("Failed to fetch photo", error);
+    return "";
   }
 }

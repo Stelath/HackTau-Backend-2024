@@ -13,9 +13,9 @@ import * as admin from "firebase-admin";
 
 admin.initializeApp();
 
-import { createCircle, startCircle } from "./circle";
+import { createCircle, startCircle, joinCircle } from "./circle";
 
-export { getPhotoTest };
+export { createCircle, startCircle, joinCircle };
 
 // Start writing functions
 // https://firebase.google.com/docs/functions/typescript

@@ -29,8 +29,35 @@ export const startCircle = onRequest(async (request: Request, response: Response
     const docRef = db.collection('circles').doc(circleId);
     
     const restaurants = await getRestaurants({ latitude, longitude, radius });
+    
+    if ('error' in restaurants) {
+        response.status(500).send(restaurants.error);
+        return;
+    }
 
-    await docRef.update({ restaurants, status: 'active' });
+    await docRef.update({ restaurants: restaurants, status: 'active' });
     
     response.send('Circle started');
+});
+
+interface JoinCircleParams {
+    circleId: string;
+    userId: string;
+}
+
+export const joinCircle = onRequest(async (request: Request, response: Response) => {
+    const { circleId, userId } = request.body as JoinCircleParams;
+
+    const db = admin.firestore();
+    const docRef = db.collection('circles').doc(circleId);
+
+    const doc = await docRef.get();
+    if (!doc.exists) {
+        response.status(404).send('Circle not found');
+        return;
+    }
+    
+    await docRef.update({ members: admin.firestore.FieldValue.arrayUnion(userId) });
+
+    response.send('Joined circle');
 });
