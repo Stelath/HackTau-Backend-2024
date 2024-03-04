@@ -33,9 +33,9 @@ export const getRestaurants = async ({ latitude, longitude, radius }: SearchPara
 
   const headers = {
     "Content-Type": "application/json",
-    "X-Goog-Api-Key": process.env.GOOGLE_MAPS_API_KEY ?? "",
+    "X-Goog-Api-Key": "AIzaSyCnb6y5WhZLUfaQmMD8Qtog7Ybrql7QL8w",
     "X-Goog-FieldMask":
-      "places.displayName,places.formattedAddress,places.types,places.websiteUri,places.rating,places.priceLevel,places.photos",
+      "places.displayName,places.formattedAddress,places.types,places.websiteUri,places.rating,places.priceLevel,places.photos,places.id",
   };
 
   try {
@@ -58,6 +58,7 @@ export const getRestaurants = async ({ latitude, longitude, radius }: SearchPara
 
     const restaurants = await Promise.all(json.places.map(async (place: any) => ({
       types: place.types,
+      id: place.id,
       formattedAddress: place.formattedAddress,
       rating: place.rating,
       websiteUri: place.websiteUri,
@@ -65,9 +66,15 @@ export const getRestaurants = async ({ latitude, longitude, radius }: SearchPara
       photo: await getPhotoUri(place.photos[0].name)
     })));
 
+    const ranked = json.places.map((place: any) => ({
+      id: place.id,
+      rating: 0,
+      ratingNumber: 0
+    }));
+
     console.log(restaurants);
 
-    return restaurants
+    return {restaurants, ranked};
   } catch (error) {
     return { error: "Failed to fetch restaurants" };
   }
@@ -78,7 +85,7 @@ const getPhotoUri = async (photoReference: string) => {
   
   const headers = {
     "Content-Type": "application/json",
-    "X-Goog-Api-Key": process.env.GOOGLE_MAPS_API_KEY ?? "",
+    "X-Goog-Api-Key": "AIzaSyCnb6y5WhZLUfaQmMD8Qtog7Ybrql7QL8w",
   };
 
   try {
